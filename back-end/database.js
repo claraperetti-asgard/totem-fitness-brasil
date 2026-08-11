@@ -21,7 +21,6 @@ try {
         ADD COLUMN is_client INTEGER
     `);
 } catch (error) {
-    // Coluna já existe
 }
 
 console.log("Banco SQLite conectado!");
