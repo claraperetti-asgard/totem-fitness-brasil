@@ -1,0 +1,60 @@
+/* Tema do teclado virtual do totem (preto + dourado) — compacto */
+
+.teclado-totem.simple-keyboard {
+    background: transparent;
+    padding: 0;
+    font-family: inherit;
+}
+
+.teclado-totem.simple-keyboard .hg-row {
+    margin-bottom: 5px;
+}
+
+.teclado-totem.simple-keyboard .hg-row:last-child {
+    margin-bottom: 0;
+}
+
+.teclado-totem.simple-keyboard .hg-button {
+    height: 38px;
+    min-width: 0;
+    border-radius: 5px;
+    border: 1px solid #2c2c2c;
+    background: #1c1c1c;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 1px 0 #000000;
+    transition: background 0.08s ease, transform 0.08s ease;
+}
+
+.teclado-totem.simple-keyboard .hg-button:active,
+.teclado-totem.simple-keyboard .hg-button.hg-activeButton {
+    background: linear-gradient(180deg, #d3b077, #a37c3f);
+    color: #ffffff;
+    transform: translateY(1px);
+    box-shadow: none;
+}
+
+/* Teclas de ação */
+.teclado-totem.simple-keyboard .hg-button[data-skbtn="{shift}"],
+.teclado-totem.simple-keyboard .hg-button[data-skbtn="{backspace}"],
+.teclado-totem.simple-keyboard .hg-button[data-skbtn="{space}"] {
+    background: #262626;
+    color: #c9a367;
+    font-size: 12px;
+}
+
+.teclado-totem.simple-keyboard .hg-button[data-skbtn="{space}"] {
+    max-width: none;
+}
+
+.teclado-totem.simple-keyboard .hg-button.hg-button-shift-ativo {
+    background: linear-gradient(180deg, #d3b077, #a37c3f);
+    color: #ffffff;
+}
+
+/* Layout numérico (telefone) */
+.teclado-totem.teclado-numerico .hg-button {
+    height: 44px;
+    font-size: 17px;
+}
