@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { User, Dumbbell, Mail, Phone } from "lucide-react";
+import { User, Dumbbell, Mail, Phone, Settings, ArrowLeft } from "lucide-react";
 import TecladoVirtual, { type LayoutTeclado } from "../components/TecladoVirtual";
+import LoginAdmin from "../components/LoginAdmin";
 
 const GOLD = "#c9a367";
 
@@ -69,6 +70,8 @@ export default function Formulario() {
     const [isClient, setIsClient] = useState<boolean | null>(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
+
+    const [mostrarLogin, setMostrarLogin] = useState(false);
 
     const [campoAtivo, setCampoAtivo] = useState<CampoAtivo>(null);
     const [layoutName, setLayoutName] = useState<LayoutTeclado>("default");
@@ -181,8 +184,27 @@ export default function Formulario() {
     }
 
     return (
-        <div className="flex min-h-screen w-full flex-col items-center justify-center bg-black px-6 py-12">
-           
+        <div className="relative flex min-h-screen w-full flex-col items-center justify-center bg-black px-6 py-12">
+            <button
+                type="button"
+                onClick={() => navigate("/")}
+                aria-label="Voltar para a home"
+                className="absolute top-4 left-4 rounded-full p-2 text-neutral-700 transition-colors active:text-[#c9a367]"
+            >
+                <ArrowLeft size={22} strokeWidth={1.8} />
+            </button>
+
+            <button
+                type="button"
+                onClick={() => setMostrarLogin(true)}
+                aria-label="Acesso restrito"
+                className="absolute top-4 right-4 rounded-full p-2 text-neutral-700 transition-colors active:text-[#c9a367]"
+            >
+                <Settings size={22} strokeWidth={1.8} />
+            </button>
+
+            {mostrarLogin && <LoginAdmin onFechar={() => setMostrarLogin(false)} />}
+
             <form
                 onSubmit={(e) => {
                     e.preventDefault();
