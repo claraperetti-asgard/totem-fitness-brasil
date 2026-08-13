@@ -1,1 +1,18 @@
 @import "tailwindcss";
+
+/* Totem: sem zoom, sem arrastar a tela para os lados e sem "elástico". */
+html,
+body {
+    height: 100%;
+    overflow-x: hidden;
+    overscroll-behavior: none;
+    background-color: #000000;
+    touch-action: pan-y;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#root {
+    min-height: 100%;
+    overflow-x: hidden;
+}

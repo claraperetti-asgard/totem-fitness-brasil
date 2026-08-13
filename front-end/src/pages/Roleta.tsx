@@ -1,39 +1,161 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ArrowLeft } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 
 import FundoRoleta from "../assets/tela-roleta-totem-fitness.jpeg";
 import RoletaFoto from "../assets/roleta-totem-fitness.png";
 
+// Diferença entre dois ângulos, sempre no intervalo (-180, 180].
+function diferencaAngulo(atual: number, anterior: number) {
+    let delta = atual - anterior;
+
+    while (delta > 180) delta -= 360;
+    while (delta < -180) delta += 360;
+
+    return delta;
+}
+
 export default function Roleta() {
     const [rotation, setRotation] = useState(0);
     const [isSpinning, setIsSpinning] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
+    const [jaGirou, setJaGirou] = useState(false);
 
     const navigate = useNavigate();
 
-    const handleSpin = () => {
-        if (isSpinning) return;
+    const roletaRef = useRef<HTMLDivElement>(null);
 
+    // Estado do arrasto (em ref para não re-renderizar a cada movimento).
+    const arrasto = useRef({
+        ativo: false,
+        anguloAnterior: 0,
+        rotacaoAtual: 0,
+        percorrido: 0,
+        velocidade: 0, // graus por milissegundo
+        tempoAnterior: 0,
+    });
+
+    const girar = (graus: number) => {
         setIsSpinning(true);
+        setJaGirou(true);
 
-        const newRotation =
-            rotation + Math.floor(Math.random() * 4000) + 2000;
-
-        setRotation(newRotation);
+        setRotation((atual) => atual + graus);
 
         setTimeout(() => {
             setIsSpinning(false);
         }, 3000);
     };
 
-    // Volta para a Home depois de 60 segundos
+    const handleSpin = () => {
+        if (isSpinning) return;
+
+        girar(Math.floor(Math.random() * 4000) + 2000);
+    };
+
+    // Ângulo do ponteiro em relação ao centro da roleta.
+    const anguloDoPonteiro = (clientX: number, clientY: number) => {
+        const rect = roletaRef.current?.getBoundingClientRect();
+
+        if (!rect) return 0;
+
+        const centroX = rect.left + rect.width / 2;
+        const centroY = rect.top + rect.height / 2;
+
+        return (
+            (Math.atan2(clientY - centroY, clientX - centroX) * 180) / Math.PI
+        );
+    };
+
+    const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+        if (isSpinning) return;
+
+        e.currentTarget.setPointerCapture(e.pointerId);
+
+        arrasto.current = {
+            ativo: true,
+            anguloAnterior: anguloDoPonteiro(e.clientX, e.clientY),
+            rotacaoAtual: rotation,
+            percorrido: 0,
+            velocidade: 0,
+            tempoAnterior: e.timeStamp,
+        };
+
+        setIsDragging(true);
+    };
+
+    const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+        const estado = arrasto.current;
+
+        if (!estado.ativo) return;
+
+        const angulo = anguloDoPonteiro(e.clientX, e.clientY);
+        const delta = diferencaAngulo(angulo, estado.anguloAnterior);
+        const tempo = e.timeStamp - estado.tempoAnterior;
+
+        estado.rotacaoAtual += delta;
+        estado.percorrido += Math.abs(delta);
+        estado.anguloAnterior = angulo;
+
+        if (tempo > 0) {
+            estado.velocidade = delta / tempo;
+        }
+
+        estado.tempoAnterior = e.timeStamp;
+
+        setRotation(estado.rotacaoAtual);
+    };
+
+    const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+        const estado = arrasto.current;
+
+        if (!estado.ativo) return;
+
+        estado.ativo = false;
+
+        e.currentTarget.releasePointerCapture?.(e.pointerId);
+
+        setIsDragging(false);
+
+        // Movimento muito pequeno: trata como toque simples.
+        if (estado.percorrido < 6) {
+            handleSpin();
+            return;
+        }
+
+        // Impulso proporcional à velocidade do arrasto, com giro mínimo.
+        const impulso = estado.velocidade * 1200;
+        const minimo = 720;
+
+        if (Math.abs(impulso) < 60) return;
+
+        const graus =
+            Math.sign(impulso) *
+            Math.min(Math.max(Math.abs(impulso), minimo), 6000);
+
+        girar(graus);
+    };
+
+    // Sem nenhuma interação, volta para a home.
     useEffect(() => {
+        if (jaGirou) return;
+
         const timer = setTimeout(() => {
             navigate("/");
         }, 60000);
 
         return () => clearTimeout(timer);
-    }, [navigate]);
+    }, [navigate, jaGirou]);
+
+    // Depois de girar, deixa o resultado na tela por 10s e volta para a home.
+    useEffect(() => {
+        if (!jaGirou || isSpinning) return;
+
+        const timer = setTimeout(() => {
+            navigate("/");
+        }, 10000);
+
+        return () => clearTimeout(timer);
+    }, [navigate, jaGirou, isSpinning]);
 
     return (
         <div
@@ -84,18 +206,24 @@ export default function Roleta() {
     />
 </NavLink>
 
-            {/* Roleta */}
+            {/* Roleta — gira no toque ou arrastando o dedo */}
             <div
+                ref={roletaRef}
                 className="
                     absolute
                     left-1/2
                     top-[12%]
                     z-20
                     -translate-x-1/2
-                    cursor-pointer
+                    cursor-grab
+                    touch-none
                     select-none
+                    active:cursor-grabbing
                 "
-                onClick={handleSpin}
+                onPointerDown={onPointerDown}
+                onPointerMove={onPointerMove}
+                onPointerUp={onPointerUp}
+                onPointerCancel={onPointerUp}
             >
                 <img
                     src={RoletaFoto}
@@ -113,9 +241,10 @@ export default function Roleta() {
                     "
                     style={{
                         transform: `rotate(${rotation}deg)`,
-                        transition: isSpinning
-                            ? "transform 3s cubic-bezier(0.15, 0, 0.15, 1)"
-                            : "none",
+                        transition:
+                            isSpinning && !isDragging
+                                ? "transform 3s cubic-bezier(0.15, 0, 0.15, 1)"
+                                : "none",
                     }}
                 />
             </div>
