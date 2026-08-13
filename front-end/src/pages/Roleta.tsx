@@ -173,10 +173,10 @@ export default function Roleta() {
             }}
         >
             {/* Seta voltar */}
-{/* Seta voltar */}
-<NavLink
-    to="/"
-    className="
+            {/* Seta voltar */}
+            <NavLink
+                to="/"
+                className="
         absolute
         right-6
         top-6
@@ -197,14 +197,13 @@ export default function Roleta() {
         sm:h-20
         sm:w-20
     "
->
-    <ArrowLeft
-        size={42}
-        strokeWidth={2.5}
-        color="#ffffff"
-        className="scale-x-[-1]"
-    />
-</NavLink>
+            >
+                <ArrowLeft
+                    size={42}
+                    strokeWidth={2.5}
+                    className="scale-x-[-1] text-neutral-300"
+                />
+            </NavLink>
 
             {/* Roleta — gira no toque ou arrastando o dedo */}
             <div
@@ -249,7 +248,7 @@ export default function Roleta() {
                 />
             </div>
 
-             {/* =========================
+            {/* =========================
                 PONTEIRO FIXO
             ========================= */}
             <div

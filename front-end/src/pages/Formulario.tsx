@@ -189,7 +189,7 @@ export default function Formulario() {
                 type="button"
                 onClick={() => navigate("/")}
                 aria-label="Voltar para a home"
-                className="absolute top-4 left-4 rounded-full p-2 text-neutral-200 transition-colors active:text-[#c9a367]"
+                className="absolute top-4 left-4 rounded-full p-2 text-neutral-300 transition-colors active:text-[#c9a367]"
             >
                 <ArrowLeft size={22} strokeWidth={1.8} />
             </button>
@@ -198,7 +198,7 @@ export default function Formulario() {
                 type="button"
                 onClick={() => setMostrarLogin(true)}
                 aria-label="Acesso restrito"
-                className="absolute top-4 right-4 rounded-full p-2 text-neutral-200 transition-colors active:text-[#c9a367]"
+                className="absolute top-4 right-4 rounded-full p-2 text-neutral-300 transition-colors active:text-[#c9a367]"
             >
                 <Settings size={22} strokeWidth={1.8} />
             </button>
