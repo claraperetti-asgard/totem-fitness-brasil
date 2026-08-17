@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { ArrowLeft } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 
-import FundoRoleta from "../assets/tela-roleta-totem-fitness.jpeg";
+import FundoRoleta from "../assets/tela-roleta-totem-fitness.png";
 import RoletaFoto from "../assets/roleta-totem-fitness.png";
 
 // Diferença entre dois ângulos, sempre no intervalo (-180, 180].
@@ -211,7 +211,7 @@ export default function Roleta() {
                 className="
                     absolute
                     left-1/2
-                    top-[12%]
+                    top-[9%]
                     z-20
                     -translate-x-1/2
                     cursor-grab
@@ -256,7 +256,7 @@ export default function Roleta() {
                     pointer-events-none
                     absolute
                     left-1/2
-                    top-[49%]
+                    top-[44%]
                     z-[50]
                     -translate-x-1/2
                 "
